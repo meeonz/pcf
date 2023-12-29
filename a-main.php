@@ -4,6 +4,7 @@ session_start();
 include("database.php");
 if( !verifyAdmin($con) ) 
 {
+	
 	header( "Location: index.php" );
 	return false;
 }
