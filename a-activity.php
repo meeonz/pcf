@@ -1,6 +1,7 @@
 <?PHP
 session_start();
 
+
 include("database.php");
 if( !verifyAdmin($con) ) 
 {
