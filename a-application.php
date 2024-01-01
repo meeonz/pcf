@@ -20,17 +20,42 @@ $status		= (isset($_POST['status'])) ? trim($_POST['status']) : '';
 
 $success = "";
 
-if($act == "yes")
-{	
-	$SQL_update = " UPDATE `application` SET `status` = 'Yes' WHERE `id_application` =  '$id_application'";									
-	$result = mysqli_query($con, $SQL_update) or die("Error in query: ".$SQL_update."<br />".mysqli_error($con));
-	
-	$SQL_update = " UPDATE `student` SET `balance` = balance - $fund WHERE `id_student` =  '$id_student'";									
-	$result = mysqli_query($con, $SQL_update);
-	
-	$success = "Successfully Update";
-	//print "<script>alert('Successfully Update'); self.location='a-application.php';</script>";
+if ($act == "yes") {
+    // Assuming $id_application, $id_student, $fund are defined elsewhere in your code
+
+    // Check if balance is not equal to or less than zero
+    $checkBalanceQuery = "SELECT balance FROM `student` WHERE `id_student` = '$id_student'";
+    $balanceResult = mysqli_query($con, $checkBalanceQuery);
+    
+    if ($balanceResult) {
+        $row = mysqli_fetch_assoc($balanceResult);
+        $currentBalance = $row['balance'];
+
+        if ($currentBalance <= 0) {
+            $error = "Balance is not equal to or less than zero";
+        } elseif ($fund > $currentBalance) {
+            $error = "Fund exceeds the current balance";
+        } else {
+            // Update application status to 'Yes'
+            $updateApplicationQuery = "UPDATE `application` SET `status` = 'Yes' WHERE `id_application` = '$id_application'";
+            $resultApplication = mysqli_query($con, $updateApplicationQuery) or die("Error in query: ".$updateApplicationQuery."<br />".mysqli_error($con));
+
+            // Deduct fund from balance
+            $updateBalanceQuery = "UPDATE `student` SET `balance` = balance - $fund WHERE `id_student` = '$id_student'";
+            $resultBalance = mysqli_query($con, $updateBalanceQuery);
+
+            if ($resultApplication && $resultBalance) {
+                $success = "Successfully Update";
+            } else {
+                $error = "Error updating application or balance";
+            }
+        }
+    } else {
+        $error = "Error fetching balance";
+    }
 }
+
+
 
 if($act == "no")
 {	
@@ -116,7 +141,9 @@ if($success) { Notify("success", $success, "a-application.php"); }
 					<th>Balance (RM)</th>
 					<th>Fund Needed (RM)</th>
 					<th>Status</th>
+					<th>Application Date</th>
 					<th>Approval</th>
+
 				</tr>
 			</thead>
 			<tbody>
@@ -137,6 +164,7 @@ if($success) { Notify("success", $success, "a-application.php"); }
 				<td><?PHP echo $data["bal"] ;?></td>
 				<td><b><?PHP echo $data["fund"] ;?></b></td>
 				<td><?PHP echo $data["status"] ;?></td>
+				<td><?PHP echo $data["application_date"] ;?></td>
 				<td>
 				<?PHP if($data["status"] == "Pending") { ?>
 				<a href="#" onclick="document.getElementById('idYes<?PHP echo $bil;?>').style.display='block'" class="w3-button w3-round w3-green">YES</a>				
@@ -261,5 +289,28 @@ function w3_close() {
 }
 </script>
 
+
+<script>
+    // Destroy existing DataTable instance
+// if ($.fn.DataTable.isDataTable('#dataTable')) {
+//     $('#dataTable').DataTable().destroy();
+// }
+
+$(document).ready(function() {
+    // Destroy existing DataTable instance
+    if ($.fn.DataTable.isDataTable('#dataTable')) {
+        $('#dataTable').DataTable().destroy();
+    }
+
+    // Reinitialize DataTable
+    $('#dataTable').DataTable({
+        paging: true,
+        searching: true,
+        language: {
+            searchPlaceholder: 'Enter your search term...',
+        }
+    });
+});
+</script>
 </body>
 </html>

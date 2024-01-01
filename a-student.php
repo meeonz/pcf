@@ -21,7 +21,7 @@ $faculty	= (isset($_POST['faculty'])) ? trim($_POST['faculty']) : '';
 $noic		= (isset($_POST['noic'])) ? trim($_POST['noic']) : '';
 $gender		= (isset($_POST['gender'])) ? trim($_POST['gender']) : '';
 $religion	= (isset($_POST['religion'])) ? trim($_POST['religion']) : '';
-$address	= (isset($_POST['address'])) ? trim($_POST['address']) : '';
+$address	= (isset($_POST['address'])) ? trim($_POST[   'address']) : '';
 $dob		= (isset($_POST['dob'])) ? trim($_POST['dob']) : '';
 $nationality= (isset($_POST['nationality'])) ? trim($_POST['nationality']) : '';
 $race		= (isset($_POST['race'])) ? trim($_POST['race']) : '';
@@ -29,7 +29,7 @@ $phone		= (isset($_POST['phone'])) ? trim($_POST['phone']) : '';
 $email		= (isset($_POST['email'])) ? trim($_POST['email']) : '';
 $username	= (isset($_POST['username'])) ? trim($_POST['username']) : '';
 $password	= (isset($_POST['password'])) ? trim($_POST['password']) : '';
-
+$passwordhash = password_hash($password, PASSWORD_DEFAULT);
 $name		=  mysqli_real_escape_string($con, $name);
 $address	=  mysqli_real_escape_string($con, $address);
 
@@ -42,7 +42,7 @@ if($act == "add")
 				`noic`, `gender`, `religion`, `address`, `dob`, `nationality`, `race`, `phone`, `email`, `username`, `password`,
 				`balance`, `acc_no`, `bank`) 
 			VALUES (NULL, '$name', '$matrix', '$programme', '$cur_semester', '$semester', '$faculty', 
-				'$noic', '$gender', '$religion', '$address', '$dob', '$nationality', '$race', '$phone', '$email', '$username', '$password',
+				'$noic', '$gender', '$religion', '$address', '$dob', '$nationality', '$race', '$phone', '$email', '$username', '$passwordhash',
 				'1000', '', '')	
 	";		
 										
@@ -73,7 +73,7 @@ if($act == "edit")
 						`phone` = '$phone',
 						`email` = '$email',
 						`username` = '$username',
-						`password` = '$password'
+						`password` = '$passwordhash'
 					WHERE `id_student` =  '$id_student'";	
 										
 	$result = mysqli_query($con, $SQL_update) or die("Error in query: ".$SQL_update."<br />".mysqli_error($con));

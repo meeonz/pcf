@@ -9,10 +9,10 @@ $error = "";
 
 if($act == "login") 
 {
-	$username 	= (isset($_POST['username'])) ? trim($_POST['username']) : '';
+	$matrix 	= (isset($_POST['matrix'])) ? trim($_POST['matrix']) : '';
 	$password 	= (isset($_POST['password'])) ? trim($_POST['password']) : '';
 
-	$SQL_login = " SELECT * FROM `student` WHERE `username` = '$username' AND `password` = '$password'  ";
+	$SQL_login = " SELECT * FROM `student` WHERE `matrix` = '$matrix' AND `password` = '$password'  ";
 
 	$result = mysqli_query($con, $SQL_login);
 	$data	= mysqli_fetch_array($result);
@@ -21,8 +21,8 @@ if($act == "login")
 
 	if($valid > 0)
 	{
-		$_SESSION["password"] 	= $password;
-		$_SESSION["username"] 	= $username;
+		// $_SESSION["password"] 	= $password;
+		$_SESSION["matrix"] 	= $matrix;
 		$_SESSION["id_student"] = $data["id_student"];
 		
 		header("Location:main.php");
@@ -106,8 +106,8 @@ a:link {
 			
 			
 				<div class="w3-section" >
-					<label>Username *</label>
-					<input class="w3-input w3-border w3-round" type="username" name="username"  required>
+					<label>Matrix *</label>
+					<input class="w3-input w3-border w3-round" type="username" name="matrix"  required>
 				</div>
 				<div class="w3-section">
 					<label>Password *</label>

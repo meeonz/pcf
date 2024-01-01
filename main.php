@@ -1,15 +1,16 @@
-<?PHP
+<?php
 session_start();
-
 include("database.php");
-if( !verifyStudent($con) ) 
-{
-	header( "Location: index.php" );
-	return false;
+
+if (!verifyStudent($con)) {
+    header("Location: index.php");
+	return false; // Ensure that no further code is executed after the redirect
 }
-?>
-<?PHP	
-$SQL_view 	= " SELECT * FROM `student` WHERE `username` =  '". $_SESSION["username"] ."'";
+
+$currentDateTime = date('Y-m-d H:i:s'); // Format: Year-Month-Day Hour:Minute:Second
+echo "Current Date and Time in Malaysia: $currentDateTime";
+
+$SQL_view 	= " SELECT * FROM `student` WHERE `matrix` =  '" . $_SESSION["matrix"] . "'";
 $result 	= mysqli_query($con, $SQL_view);
 $data		= mysqli_fetch_array($result);
 $name		= $data["name"];

@@ -24,7 +24,7 @@ if($act == "edit")
 	$SQL_update = " UPDATE `student` SET 
 						`acc_no` = '$acc_no',
 						`bank` = '$bank'
-					WHERE `username` =  '{$_SESSION['username']}'";	
+					WHERE `matrix` =  '{$_SESSION['matrix']}'";	
 										
 	$result = mysqli_query($con, $SQL_update) or die("Error in query: ".$SQL_update."<br />".mysqli_error($con));
 	
@@ -33,7 +33,7 @@ if($act == "edit")
 }
 
 
-$SQL_view 	= " SELECT * FROM `student` WHERE `username` =  '{$_SESSION['username']}' ";
+$SQL_view 	= " SELECT * FROM `student` WHERE `matrix` =  '{$_SESSION['matrix']}' ";
 $result 	= mysqli_query($con, $SQL_view) or die("Error in query: ".$SQL_view."<br />".mysqli_error($con));
 $data		= mysqli_fetch_array($result);
 ?>

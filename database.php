@@ -1,24 +1,21 @@
-<?PHP
-	/*	-----------------------------
-		Developed by : BelajarPHP.com
-		Date : 29 Nov 2023
-		-----------------------------	*/
+<?php
+/* -----------------------------
+   Developed by : BelajarPHP.com
+   Date : 29 Nov 2023
+   ----------------------------- */
 
-	//https://pcf.u-ji.com
-	
-	date_default_timezone_set('Asia/Kuala_Lumpur');
-	
-	if($_SERVER['HTTP_HOST']=="localhost" )
-	{	
-		//localhost
-		$dbHost = "localhost";	// Database host
-		$dbName = "pcf";		// Database name
-		$dbUser = "root";		// Database user
-		$dbPass = "";			// Database password
-	}
+// https://pcf.u-ji.com
 
-	
-	$con = mysqli_connect($dbHost,$dbUser ,$dbPass,$dbName);
+date_default_timezone_set('Asia/Kuala_Lumpur');
+
+if ($_SERVER['HTTP_HOST'] == "165.22.249.21") {
+    // localhost
+    $dbHost = "sqldb";    // Database host
+    $dbName = "pcf";        // Database name
+    $dbUser = "mydb";        // Database user
+    $dbPass = "root";        // Database password
+}
+$con = mysqli_connect($dbHost,$dbUser ,$dbPass,$dbName);
 	
 	
 	function verifyAdmin($con)
@@ -36,9 +33,9 @@
 	
 	function verifyStudent($con)
 	{
-		if ($_SESSION['username'] && $_SESSION['password'] ) 
+		if ($_SESSION['matrix']  ) 
 		{
-		  $result=mysqli_query($con,"SELECT  `username`, `password` FROM `student` WHERE `username`='$_SESSION[username]' AND `password`='$_SESSION[password]' " ) ;
+		  $result=mysqli_query($con,"SELECT  `matrix` FROM `student` WHERE `matrix`='$_SESSION[matrix]' " ) ;
 
           if( mysqli_num_rows( $result ) == 1 ) 
 	  	  return true;
@@ -91,5 +88,4 @@
 		}
 		return $output;
 	}
-	
 ?>

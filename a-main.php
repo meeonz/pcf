@@ -83,7 +83,8 @@ body, html {
 							<div class="w3-container w3-large">
 								New Application <i class="fa fa-inbox fa-lg w3-right"></i> 
 								<hr style="border-top: 1px dashed; margin: 1px 0 15px !important;">
-								<h2 class="w3-center"><?PHP echo $tot_pending;?></h2>
+								<a href="a-application.php" class="w3-button w3-round w3-indigo w3-block"><?PHP echo $tot_pending;?></a>
+								<!-- <h2 class="w3-center"><?PHP echo $tot_pending;?></h2> -->
 							</div>
 						</div>
 					</div>
@@ -93,7 +94,9 @@ body, html {
 							<div class="w3-container w3-large">
 								All Application <i class="fa fa-inbox fa-lg w3-right"></i> 
 								<hr style="border-top: 1px dashed; margin: 1px 0 15px !important;">
-								<h2 class="w3-center"><?PHP echo $tot_application;?></h2>
+								<!-- <h2 class="w3-center"></h2> -->
+								<a href="a-application.php" class="w3-button w3-round w3-indigo w3-block"><?PHP echo $tot_application;?></a>
+
 							</div>
 						</div>
 					</div>
@@ -104,7 +107,9 @@ body, html {
 							<div class="w3-container w3-large">
 								Student<i class="fa fa-user-tie fa-lg w3-right"></i> 
 								<hr style="border-top: 1px dashed; margin: 1px 0 15px !important;">
-								<h2 class="w3-center"><?PHP echo $tot_student;?></h2>
+								<!-- <h2 class="w3-center"></h2> -->
+								<a href="a-student.php" class="w3-button w3-round w3-indigo w3-block"><?PHP echo $tot_student;?></a>
+
 							</div>
 						</div>
 					</div>

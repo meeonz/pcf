@@ -1,45 +1,61 @@
-<?PHP
+<?php
 session_start();
+date_default_timezone_set('Asia/Kuala_Lumpur');
 
 include("database.php");
-if( !verifyStudent($con) ) 
-{
-	header( "Location: index.php" );
-	return false;
+if (!verifyStudent($con)) {
+    header("Location: index.php");
+    return false;
 }
-?>
-<?PHP
-$id_student	= $_SESSION["id_student"];	
-$act 		= (isset($_POST['act'])) ? trim($_POST['act']) : '';	
+$id_student = $_SESSION["id_student"];
+$matrix = $_SESSION["matrix"];
+$act = (isset($_POST['act'])) ? trim($_POST['act']) : '';
 
-$date		= (isset($_POST['date'])) ? trim($_POST['date']) : '';
-$purpose	= (isset($_POST['purpose'])) ? trim($_POST['purpose']) : '';
-$fund		= (isset($_POST['fund'])) ? trim($_POST['fund']) : '';
-$balance	= (isset($_POST['balance'])) ? trim($_POST['balance']) : '';
+$date = (isset($_POST['date'])) ? trim($_POST['date']) : '';
+$purpose = (isset($_POST['purpose'])) ? trim($_POST['purpose']) : '';
+$fund = (isset($_POST['fund'])) ? trim($_POST['fund']) : '';
+$balance = (isset($_POST['balance'])) ? trim($_POST['balance']) : '';
 
-$purpose		=  mysqli_real_escape_string($con, $purpose);
-
+$purpose = mysqli_real_escape_string($con, $purpose);
+$currentdate = date('Y-m-d');
 $success = "";
 
-if($act == "add")
-{	
-	$application_no = rand(1000,9000);
-	$SQL_update = " 
-	INSERT INTO `application`(`id_application`, `id_student`, `application_no`, `date`, `purpose`, `fund`, `balance`, `status`) 
-	VALUES (NULL, '$id_student', '$application_no', '$date', '$purpose', '$fund', '$balance', 'Pending')
-	";	
-										
-	$result = mysqli_query($con, $SQL_update) or die("Error in query: ".$SQL_update."<br />".mysqli_error($con));
-	
-	$success = "Successfully Update";
-	//print "<script>alert('Successfully Updated');</script>";
+if ($act == "add") {
+    $application_no = rand(1000, 9000);
+
+    // File Upload
+    if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        $uploadFile = $uploadDir . basename($_FILES['file']['name']);
+
+        // Move the uploaded file to the specified directory
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
+            // File is valid, and was successfully uploaded
+            $fileName = $_FILES['file']['name'];
+
+            // Insert into the database
+            $SQL_update = " 
+                INSERT INTO `application`(`id_application`, `id_student`, `application_no`, `date`, `purpose`, `fund`, `balance`, `application_date`, `status`, `file_name`) 
+                VALUES (NULL, '$id_student', '$application_no', '$date', '$purpose', '$fund', '$balance', '$currentdate','Pending', '$fileName')
+            ";
+
+            $result = mysqli_query($con, $SQL_update) or die("Error in query: " . $SQL_update . "<br />" . mysqli_error($con));
+
+            $success = "Successfully Updated";
+        } else {
+            echo 'Error uploading the file.';
+        }
+    } else {
+        echo 'Error: ' . $_FILES['file']['error'];
+    }
 }
 
-$SQL_view 	= " SELECT * FROM `student` WHERE `username` =  '{$_SESSION['username']}' ";
-$result 	= mysqli_query($con, $SQL_view) or die("Error in query: ".$SQL_view."<br />".mysqli_error($con));
-$data		= mysqli_fetch_array($result);
-$balance	= $data["balance"];
+$SQL_view = " SELECT * FROM `student` WHERE `matrix` =  '{$_SESSION['matrix']}' ";
+$result = mysqli_query($con, $SQL_view) or die("Error in query: " . $SQL_view . "<br />" . mysqli_error($con));
+$data = mysqli_fetch_array($result);
+$balance = $data["balance"];
 ?>
+
 <!DOCTYPE html>
 <html>
 <title>PCF</title>
@@ -97,7 +113,7 @@ if($success) { Notify("success", $success, "status.php"); }
     <div class="w3-content w3-container w3-white w3-round w3-card" style="max-width:600px">
 		<div class="w3-padding">
 		
-			<form method="post" action="" >
+			<form method="post" action=""  enctype="multipart/form-data">
 				<h3>Application of Conference Fund</h3>
 				<hr class="w3-clear">
 				
@@ -115,22 +131,31 @@ if($success) { Notify("success", $success, "status.php"); }
 				
 				<div class="w3-section" >
 					Date Required *
-					<input class="w3-input w3-border w3-round" type="date" name="date" value="" required>
+					<input class="w3-input w3-border w3-round" type="date" name="date" value="" id=date required>
 				</div>
 				
 				<div class="w3-section" >
 					Balance (RM) *
-					<input disabled class="w3-input w3-border w3-round" type="text" name="balancex" value="<?PHP echo $data["balance"];?>" required>
+					<input disabled class="w3-input w3-border w3-round" type="text" name="balancex" id="balancex" value="<?PHP echo $data["balance"];?>" required oninput="checkFieldValues()">
 				</div>
 				
 				<div class="w3-section" >
 					Fund Needed (RM) *
-					<input class="w3-input w3-border w3-round" type="text" name="fund" value="" required>
+					<input class="w3-input w3-border w3-round" type="text" name="fund" value="" id="fund" required oninput="checkFieldValues()"  max="<?PHP echo $data["balance"];?>">
+          <small class="form-text text-muted">Balance cannot exceed Fund.</small>
+
 				</div>							
 				
 				<div class="w3-section" >
 					Purpose *
 					<textarea class="w3-input w3-border w3-round" name="purpose" required></textarea>
+				</div>
+
+				<div class="w3-section" >
+					Receipt as proof *
+					<!-- <textarea class="w3-input w3-border w3-round" name="purpose" required></textarea> -->
+					<input  class="w3-input w3-border w3-round" type="file" name="file" id="file" required accept=".pdf">
+
 				</div>
 				
 				<hr class="w3-clear">
@@ -169,6 +194,55 @@ function w3_close() {
     mySidebar.style.display = "none";
 }
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const fundInput = document.querySelector('[name="fund"]');
 
+    fundInput.addEventListener('input', function() {
+        const balance = parseFloat(document.querySelector('[name="balancex"]').value);
+        const fund = parseFloat(fundInput.value);
+
+        if (fund > balance) {
+            fundInput.style.borderColor = 'red';
+        } else {
+            fundInput.style.borderColor = ''; // Reset border color
+        }
+    });
+
+    form.addEventListener('submit', function(event) {
+        const balance = parseFloat(document.querySelector('[name="balancex"]').value);
+        const fund = parseFloat(fundInput.value);
+
+        if (fund > balance) {
+            alert('Fund requested cannot exceed the available balance.');
+            event.preventDefault(); // Prevent form submission
+        }
+    });
+});
+</script>
+
+<script>
+  // Function to check if Field 2 does not exceed Field 1
+  function checkFieldValues() {
+    var fund = document.getElementById('fund').value;
+    var balancex = document.getElementById('balancex').value;
+
+    if (parseInt(fund) > parseInt(balancex)) {
+      alert("Field fund cannot exceed balance");
+      // Reset the value of Field 2 or take other appropriate action
+      document.getElementById('fund').value = balancex;
+    }
+  }
+</script>
+
+<script>
+  // Set the minimum date to tomorrow
+  var tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  var formattedTomorrow = tomorrow.toISOString().split('T')[0];
+  document.getElementById('date').setAttribute('min', formattedTomorrow);
+</script>
 </body>
 </html>

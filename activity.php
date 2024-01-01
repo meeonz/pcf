@@ -77,6 +77,7 @@ body, html {
 					<th>Programme</th>
 					<th>Date</th>
 					<th>Fund (RM)</th>
+					<th>Transfer Status</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -93,6 +94,19 @@ body, html {
 				<td><?PHP echo $data["purpose"] ;?></td>
 				<td><?PHP echo $data["date"] ;?></td>
 				<td><?PHP echo $data["fund"] ;?></td>
+				<td>
+					<?php
+					if ($data["transfer_status"] == 0) {
+						echo "Pending";
+					} elseif ($data["transfer_status"] == 1) {
+						echo "Successful";
+					} else {
+						// Handle other cases if needed
+						echo "Unknown Status";
+					}
+					?>
+				</td>
+
 			</tr>
 			
 			
@@ -119,7 +133,7 @@ body, html {
 <script src="js/scripts.js"></script>
 <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
-<!--<script src="assets/demo/datatables-demo.js"></script>-->
+<!-- <script src="assets/demo/datatables-demo.js"></script> -->
 
 
 <script>
@@ -156,5 +170,27 @@ function w3_close() {
 }
 </script>
 
+<script>
+    // Destroy existing DataTable instance
+// if ($.fn.DataTable.isDataTable('#dataTable')) {
+//     $('#dataTable').DataTable().destroy();
+// }
+
+$(document).ready(function() {
+    // Destroy existing DataTable instance
+    if ($.fn.DataTable.isDataTable('#dataTable')) {
+        $('#dataTable').DataTable().destroy();
+    }
+
+    // Reinitialize DataTable
+    $('#dataTable').DataTable({
+        paging: true,
+        searching: true,
+        language: {
+            searchPlaceholder: 'Enter your search term...',
+        }
+    });
+});
+</script>
 </body>
 </html>

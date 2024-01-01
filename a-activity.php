@@ -160,5 +160,28 @@ function w3_close() {
 }
 </script>
 
+<script>
+    // Destroy existing DataTable instance
+// if ($.fn.DataTable.isDataTable('#dataTable')) {
+//     $('#dataTable').DataTable().destroy();
+// }
+
+$(document).ready(function() {
+    // Destroy existing DataTable instance
+    if ($.fn.DataTable.isDataTable('#dataTable')) {
+        $('#dataTable').DataTable().destroy();
+    }
+
+    // Reinitialize DataTable
+    $('#dataTable').DataTable({
+        paging: true,
+        searching: true,
+        language: {
+            searchPlaceholder: 'Enter your search term...',
+        }
+    });
+});
+</script>
+
 </body>
 </html>
